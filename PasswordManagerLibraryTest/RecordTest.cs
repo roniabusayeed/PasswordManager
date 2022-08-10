@@ -175,5 +175,61 @@ namespace PasswordManagerLibraryTest
                 new Record("website", "username", passwordOnlyWhitespaces).GetPassword(),
                 passwordOnlyWhitespaces_Expected);
         }
+        [TestMethod]
+        public void Constructor_InputStream_Test_1()
+        {
+            const string filename = "TestInputFiles/Record_Constructor_InputStream_Test_1.txt";
+            TextReader inputStream = new StreamReader(filename);
+            
+            // Try to instantiate off of a closed stream should
+            // result in an Exception instance being thrown.
+            inputStream.Close();
+            Assert.ThrowsException<Exception>(() =>
+            {
+                new Record(inputStream);
+            });
+        }
+        [TestMethod]
+        public void Constructor_InputStream_Test_2()
+        {
+            const string filename = "TestInputFiles/Record_Constructor_InputStream_Test_2.txt";
+            TextReader inputStream = new StreamReader(filename);
+            
+            Assert.ThrowsException<InvalidWebsiteException>(() =>
+            {
+                new Record(inputStream);
+            });
+        }
+        [TestMethod]
+        public void Constructor_InputStream_Test_3()
+        {
+            const string filename = "TestInputFiles/Record_Constructor_InputStream_Test_3.txt";
+            TextReader inputStream = new StreamReader(filename);
+
+            Assert.ThrowsException<InvalidUsernameException>(() =>
+            {
+                new Record(inputStream);
+            });
+        }
+        [TestMethod]
+        public void Constructor_InputStream_Test_4()
+        {
+            const string filename = "TestInputFiles/Record_Constructor_InputStream_Test_4.txt";
+            TextReader inputStream = new StreamReader(filename);
+
+            Assert.ThrowsException<InvalidPasswordException>(() =>
+            {
+                new Record(inputStream);
+            });
+        }
+        [TestMethod]
+        public void Constructor_InputStream_Test_5()
+        {
+            const string filename = "TestInputFiles/Record_Constructor_InputStream_Test_5.txt";
+            TextReader inputStream = new StreamReader(filename);
+
+            new Record(inputStream);
+            inputStream.Close();
+        }
     }
 }

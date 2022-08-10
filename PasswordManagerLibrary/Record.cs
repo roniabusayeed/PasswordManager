@@ -12,6 +12,61 @@ namespace PasswordManagerLibrary
         private string _username;
         private string _password;
 
+        /// <exception cref="InvalidWebsiteException"></exception>
+        /// <exception cref="InvalidUsernameException"></exception>
+        /// <exception cref="InvalidPasswordException"></exception>
+        private void _set(string website, string username, string password)
+        {
+            // Set the field values.
+            if (!_setWebsite(website))
+            {
+                throw new InvalidWebsiteException(
+                    "A website name cannot be empty or consists of only whitespaces.");
+            }
+            if (!SetUsername(username))
+            {
+                throw new InvalidUsernameException(
+                    "A username cannot be empty, consists of only whitespaces, or have" +
+                    "whitespaces in between.");
+            }
+            if (!SetPassword(password))
+            {
+                throw new InvalidPasswordException(
+                    "A password cannot be empty.");
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the Record class by reading values from
+        /// an open input stream.
+        /// </summary>
+        /// <param name="inputStream">The reference to an open input stream</param>
+        /// <exception cref="Exception"></exception>
+        /// <exception cref="InvalidWebsiteException"></exception>
+        /// <exception cref="InvalidUsernameException"></exception>
+        /// <exception cref="InvalidPasswordException"></exception>
+        public Record(TextReader inputStream)
+        {
+            string website;
+            string username;
+            string password;
+
+            // Read the field values from given input stream.
+            try
+            {
+                website = inputStream.ReadLine() ?? string.Empty;
+                username = inputStream.ReadLine() ?? string.Empty;
+                password = inputStream.ReadLine() ?? string.Empty;
+            } catch
+            {
+                throw new Exception("Couldn't read from input stream. The stream" +
+                    "is closed perhaps?");
+            }
+
+            // Set field values.
+            _set(website, username, password);
+        }
+
         /// <summary>
         /// Initializes a new instance of the Record class with given website,
         /// username, and password.
@@ -21,22 +76,7 @@ namespace PasswordManagerLibrary
         /// <exception cref="InvalidPasswordException"></exception>
         public Record(string website, string username, string password)
         {
-            if (! _setWebsite(website)) 
-            { 
-                throw new InvalidWebsiteException(
-                    "A website name cannot be empty or consists of only whitespaces.");
-            }
-            if (! SetUsername(username)) 
-            { 
-                throw new InvalidUsernameException(
-                    "A username cannot be empty, consists of only whitespaces, or have" +
-                    "whitespaces in between."); 
-            }
-            if (! SetPassword(password)) 
-            { 
-                throw new InvalidPasswordException(
-                    "A password cannot be empty."); 
-            }
+            _set(website, username, password);
         }
         private bool _setWebsite(string website)
         {
