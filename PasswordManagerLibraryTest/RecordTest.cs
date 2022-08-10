@@ -105,7 +105,7 @@ namespace PasswordManagerLibraryTest
         {
             // Arrange.
             string password = "password";
-            string passwordOnlyWhitespaces = "  \t\n  ";
+            string passwordOnlyWhitespaces = "  \t  ";
 
             // Act and assert.
             IRecord? record = null;
@@ -164,7 +164,7 @@ namespace PasswordManagerLibraryTest
             string password = "password";
             string password_Expected = password;
 
-            string passwordOnlyWhitespaces = "  \t\n  ";
+            string passwordOnlyWhitespaces = "  \t  ";
             string passwordOnlyWhitespaces_Expected = passwordOnlyWhitespaces;
 
             // Act and assert.
@@ -230,6 +230,39 @@ namespace PasswordManagerLibraryTest
 
             new Record(inputStream);
             inputStream.Close();
+        }
+        [TestMethod]
+        public void Save_Test()
+        {
+            // Arrange.
+            // Create a Record instance.
+            string validWebsite = "  web si\t  te";
+            string validUsername = "  username\t";
+            string validPassword = "password  \t";
+            IRecord record = new Record(validWebsite, validUsername, validPassword);
+            
+            // Open a output stream.
+            const string filename = "TestOutputFiles/Record_Save_Test_1.txt";
+            TextWriter outputStream = new StreamWriter(filename);
+
+            // Act.
+            bool result = record.Save(outputStream);
+            
+            // Close output stream.
+            outputStream.Close();
+
+            // Assert.
+            Assert.IsTrue(result);  // Save must return true upon a successful save.
+
+            // Test if the data is saved correctly.
+            // 1. Load the data back into another object.
+            // 2. Assert if the this new object is equal to the previous one. (dependency: Equals method)
+            TextReader inputStream = new StreamReader(filename);
+            IRecord loadedRecord = new Record(inputStream);
+            inputStream.Close();
+
+            // Assert.
+            Assert.AreEqual(loadedRecord, record);
         }
     }
 }

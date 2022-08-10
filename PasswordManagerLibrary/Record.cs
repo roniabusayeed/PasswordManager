@@ -21,7 +21,8 @@ namespace PasswordManagerLibrary
             if (!_setWebsite(website))
             {
                 throw new InvalidWebsiteException(
-                    "A website name cannot be empty or consists of only whitespaces.");
+                    "A website name cannot be empty, consists of only whitespaces," +
+                    " or have newline character(s) in between.");
             }
             if (!SetUsername(username))
             {
@@ -32,7 +33,7 @@ namespace PasswordManagerLibrary
             if (!SetPassword(password))
             {
                 throw new InvalidPasswordException(
-                    "A password cannot be empty.");
+                    "A password cannot be empty or have newline character(s) in between.");
             }
         }
 
@@ -86,6 +87,9 @@ namespace PasswordManagerLibrary
             // A website name shouldn't contain only whitespaces.
             if (trimmedWebsite.Length == 0) { return false; }
 
+            // A website name should contain any newline character in between.
+            if (trimmedWebsite.Any(ch => ch == '\n')) { return false; }
+
             _website = trimmedWebsite;
             return true;
         }
@@ -110,6 +114,9 @@ namespace PasswordManagerLibrary
             // A password cannot be empty. (But it can contain only whitespaces)
             if (password.Length == 0) { return false; }
 
+            // A password should contain any newline character in between.
+            if (password.Any(ch => ch == '\n')) { return false; }
+
             _password = password;
             return true;
         }
@@ -132,6 +139,32 @@ namespace PasswordManagerLibrary
             }
             _username = trimmedUsername;
             return true;
+        }
+
+        public bool Save(TextWriter outputStream)
+        {
+            try
+            {
+                outputStream.WriteLine(GetWebsite());
+                outputStream.WriteLine(GetUsername());
+                outputStream.WriteLine(GetPassword());
+            } catch
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public override bool Equals(object? obj)
+        {
+            Record? other = obj as Record;
+            if (other != null)
+            {
+                return GetWebsite() == other.GetWebsite() &&
+                    GetUsername() == other.GetUsername() &&
+                    GetPassword() == other.GetPassword();
+            }
+            return false;
         }
     }
 }

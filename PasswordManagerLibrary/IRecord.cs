@@ -41,5 +41,12 @@ namespace PasswordManagerLibrary
         /// <returns>true if the password is set successfully. Otherwise, the password
         /// remains unchanged and it returns false.</returns>
         bool SetPassword(string password);
+
+        /// <summary>
+        /// Writes the content of a record to the outputSteram.
+        /// </summary>
+        /// <param name="outputStream">A reference to the output stream to write to.</param>
+        /// <returns>true if the save was successful. Otherwise, returns false.</returns>
+        bool Save(TextWriter outputStream);
     }
 }
