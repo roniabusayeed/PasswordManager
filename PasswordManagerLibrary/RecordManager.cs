@@ -47,5 +47,36 @@ namespace PasswordManagerLibrary
             _records[record.GetWebsite()] = record;
             return true;
         }
+
+        /// <summary>
+        /// Saves a record manager instance to a output stream.
+        /// </summary>
+        /// <param name="outputStream">Reference to an output stream to write to.</param>
+        /// <returns>true if all records are saved successfully. Otherwise returns false.</returns>
+        public bool Save(TextWriter outputStream)
+        {
+            // Save the total number of records.
+            // Necessary for loading the records back in memory.
+            outputStream.WriteLine(_records.Count);
+
+            foreach (IRecord record in _records.Values)
+            {
+                // Save the name of the IRecord type.
+                // Necessary for loading them back in memory when
+                // more than one type of record implementing IRecord
+                // interface.
+                outputStream.WriteLine(record.GetType().Name);
+
+                // If any record is not saved successfully,
+                // cease save operation and return false.
+                if (! record.Save(outputStream))
+                {
+                    return false;
+                }
+            }
+
+            // All records are saved successfully.
+            return true;
+        }
     }
 }

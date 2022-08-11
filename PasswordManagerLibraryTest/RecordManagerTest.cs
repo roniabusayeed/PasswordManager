@@ -105,5 +105,21 @@ namespace PasswordManagerLibraryTest
             Assert.AreEqual(foundRecord.GetUsername(), modified_username);
             Assert.AreEqual(foundRecord.GetPassword(), modified_password);
         }
+        [TestMethod]
+        public void Save_Test()
+        {
+            // Arrange.
+            RecordManager manager = new();
+            manager.AddRecord(new Record("website", "username", "password"));
+            manager.AddRecord(new Record("website", "modified-username", "modified-password"));
+            manager.AddRecord(new Record("website2", "username2", "password2"));
+            const string saveFileName = "TestOutputFiles/saveFile.txt";
+            TextWriter outputStream = new StreamWriter(saveFileName);
+            bool result = manager.Save(outputStream);
+            outputStream.Close();
+
+            // Assert.
+            Assert.IsTrue(result);
+        }
     }
 }
