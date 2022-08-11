@@ -121,5 +121,41 @@ namespace PasswordManagerLibraryTest
             // Assert.
             Assert.IsTrue(result);
         }
+
+        [TestMethod]
+        public void Load_Test()
+        {
+            // Arrange.
+            RecordManager manager = new();
+            manager.AddRecord(new Record("website", "username", "password"));
+            manager.AddRecord(new Record("website", "modified-username", "modified-password"));
+            manager.AddRecord(new Record("website2", "username2", "password2"));
+            const string saveFileName = "TestInputFiles/saveFile.txt";
+            TextWriter outputStream = new StreamWriter(saveFileName);
+            manager.Save(outputStream);
+            outputStream.Close();
+
+            // Act.
+            TextReader inputStream = new StreamReader(saveFileName);
+            RecordManager? loadedManager = RecordManager.Load(inputStream);
+            inputStream.Close();
+
+            // Assert.
+            Assert.IsNotNull(loadedManager);
+            
+            Assert.AreEqual(
+                loadedManager.FindRecord("website")?.GetUsername(),
+                "modified-username");
+            Assert.AreEqual(
+                loadedManager.FindRecord("website")?.GetPassword(),
+                "modified-password");
+            
+            Assert.AreEqual(
+                loadedManager.FindRecord("website2")?.GetUsername(),
+                "username2");
+            Assert.AreEqual(
+                loadedManager.FindRecord("website2")?.GetPassword(),
+                "password2");
+        }
     }
 }

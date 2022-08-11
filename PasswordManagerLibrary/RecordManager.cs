@@ -78,5 +78,39 @@ namespace PasswordManagerLibrary
             // All records are saved successfully.
             return true;
         }
+
+        /// <summary>
+        /// Loads and instantiates a new RecordManager instance from an input stream.
+        /// </summary>
+        /// <param name="inputStream">Reference to an input stream to load from.</param>
+        /// <returns>A referene to the RecordManager instance if it is successfully loaded.
+        /// Otherwise, returns null.</returns>
+        public static RecordManager? Load(TextReader inputStream)
+        {
+            RecordManager manager = new();
+
+            // Read the count of records.
+            string countText = inputStream.ReadLine() ?? string.Empty;
+            int count = int.Parse(countText);
+
+            // Read all records.
+            for (int i = 0; i < count; i++)
+            {
+                // Read the type name of each of the record.
+                string typeName = inputStream.ReadLine() ?? string.Empty;
+                
+                // Read the record itself.
+                IRecord? record = RecordFactory.MakeRecord(typeName, inputStream);
+                if (record == null)
+                {
+                    // Record is not loaded. Cease operation and return null.
+                    return null;    
+                }
+
+                manager.AddRecord(record);
+            }
+
+            return manager;
+        }
     }
 }
