@@ -37,10 +37,12 @@
         <TextBox Grid.Row="2" Grid.Column="2"
                  Width="300"
                  x:Name="websiteTextBox" 
+                 KeyUp="websiteTextBox_KeyUp"
                  />
         <Button Grid.Row="2" Grid.Column="3"
                 x:Name="searchButton"
-                ToolTip="Searches the Password Manager for the given website.">
+                ToolTip="Searches the Password Manager for the given website." Click="searchButton_Click" 
+                >
             Search
         </Button>
 
@@ -51,7 +53,7 @@
                  x:Name="usernameTextBox"/>
         <Button Grid.Row="3" Grid.Column="3"
                 x:Name="usernameCopyButton"
-                ToolTip="Copies username to clipboard.">
+                ToolTip="Copies username to clipboard." Click="usernameCopyButton_Click">
             Copy
         </Button>
 
@@ -62,18 +64,18 @@
                  x:Name="passwordBox"/>
         <Button Grid.Row="4" Grid.Column="3"
                 x:Name="passwordCopyButton"
-                ToolTip="Copies password to clipboard.">
+                ToolTip="Copies password to clipboard." Click="passwordCopyButton_Click">
             Copy
         </Button>
 
         <Button Grid.Row="6" Grid.Column="5"
                 x:Name="saveButton" 
-                ToolTip="Saves/updates the Password Manager with the current records">
+                ToolTip="Saves/updates the Password Manager with the current records" Click="saveButton_Click">
             Save
         </Button>
         <Button Grid.Row="6" Grid.Column="6"
                 x:Name="clearButton"
-                ToolTip="Clears all entries.">
+                ToolTip="Clears all entries." Click="clearButton_Click">
             Clear
         </Button>
 
