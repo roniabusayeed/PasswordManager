@@ -27,7 +27,7 @@ namespace PasswordManagerLibrary
             if (!SetUsername(username))
             {
                 throw new InvalidUsernameException(
-                    "A username cannot be empty, consists of only whitespaces, or have" +
+                    "A username cannot be empty, consists of only whitespaces, or have " +
                     "whitespaces in between.");
             }
             if (!SetPassword(password))

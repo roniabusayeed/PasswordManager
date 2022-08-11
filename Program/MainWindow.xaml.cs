@@ -102,7 +102,7 @@ namespace Program
                 _recordManager.AddRecord(record);
             } catch (Exception e)
             {
-                MessageBox.Show($"Error {e.Message}");
+                MessageBox.Show($"Error: {e.Message}", Title);
             }
         }
 
@@ -120,7 +120,7 @@ namespace Program
             }
             catch
             {
-                MessageBox.Show($"Error: Couldn't open file \"{FILENAME}\" for writing.");
+                MessageBox.Show($"Error: Couldn't open file \"{FILENAME}\" for writing.", Title);
             }
             finally
             {
@@ -129,7 +129,7 @@ namespace Program
 
             if (!status)
             {
-                MessageBox.Show($"Error: Couldn't save to file \"{FILENAME}\"");
+                MessageBox.Show($"Error: Couldn't save to file \"{FILENAME}\"", Title);
             }
         }
 
