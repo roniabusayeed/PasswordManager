@@ -8,6 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="res\**" />
+    <EmbeddedResource Remove="res\**" />
+    <None Remove="res\**" />
+    <Page Remove="res\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\PasswordManagerLibrary\PasswordManagerLibrary.csproj" />
   </ItemGroup>
 
