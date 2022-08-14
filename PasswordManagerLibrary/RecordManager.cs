@@ -6,16 +6,67 @@ using System.Threading.Tasks;
 
 namespace PasswordManagerLibrary
 {
+    /// <summary>
+    /// Manages records for one user.
+    /// </summary>
     public class RecordManager
     {
-        private readonly Dictionary<string, IRecord> _records;
+        // username of the user whose record is being managed by this instance of RecordManager.
+        private readonly string _username;
+
+        // Records dictionary of the user.
+        private readonly Dictionary<string, IRecord> _recordsDictionary;
 
         /// <summary>
-        /// Creates a new instance of the RecordManager class.
+        /// Creates a new instance of RecordManager class for a given user.
         /// </summary>
-        public RecordManager()
+        /// <param name="username">username of the user whose record is to be managed.</param>
+        public RecordManager(string username)
         {
-            _records = new Dictionary<string, IRecord>();
+            _username = username;
+            _recordsDictionary = new Dictionary<string, IRecord>();
+
+            _loadRecords();  // If any.
+        }
+
+        /// <summary>
+        /// Loads all records to the records dictionary.
+        /// </summary>
+        /// <returns>true if the load was successful. Otherwise, returns false.</returns>
+        private bool _loadRecords()
+        {
+            string userRecordsFilePath = _getUserRecordsFilePath();
+            TextReader? inputStream = null;
+            try
+            {
+                inputStream = new StreamReader(userRecordsFilePath);
+                
+                // Read records count.
+                string recordsCountText = inputStream.ReadLine() ?? string.Empty;
+                int recordsCount = int.Parse(recordsCountText);
+                
+                // Read each record.
+                for (int i = 0; i < recordsCount; i++)
+                {
+                    string recordTypeName = inputStream.ReadLine() ?? string.Empty;
+                    IRecord? record = RecordFactory.MakeRecord(recordTypeName, inputStream);
+                    
+                    if (record == null)
+                    {
+                        return false;
+                    }
+
+                    // Save record to the records dictionary.
+                    _recordsDictionary[record.GetWebsite()] = record;
+                }
+                return true;
+            } catch
+            {
+                return false;
+            } finally
+            {
+                inputStream?.Close();
+            }
         }
 
         /// <summary>
@@ -28,7 +79,7 @@ namespace PasswordManagerLibrary
         {
             try
             {
-                return _records[website];
+                return _recordsDictionary[website];
             } catch (KeyNotFoundException)
             {
                 return null;
@@ -44,22 +95,24 @@ namespace PasswordManagerLibrary
         /// returns false.</returns>
         public bool AddRecord(IRecord record)
         {
-            _records[record.GetWebsite()] = record;
-            return true;
+            _recordsDictionary[record.GetWebsite()] = record;
+
+            //save the current state of record manager to file.
+            return _save();
         }
 
         /// <summary>
-        /// Saves a record manager instance to a output stream.
+        /// Saves the current state of the record manager instance to the output stream.
         /// </summary>
         /// <param name="outputStream">Reference to an output stream to write to.</param>
         /// <returns>true if all records are saved successfully. Otherwise returns false.</returns>
-        public bool Save(TextWriter outputStream)
+        private bool _save(TextWriter outputStream)
         {
             // Save the total number of records.
             // Necessary for loading the records back in memory.
-            outputStream.WriteLine(_records.Count);
+            outputStream.WriteLine(_recordsDictionary.Count);
 
-            foreach (IRecord record in _records.Values)
+            foreach (IRecord record in _recordsDictionary.Values)
             {
                 // Save the name of the IRecord type.
                 // Necessary for loading them back in memory when
@@ -80,37 +133,44 @@ namespace PasswordManagerLibrary
         }
 
         /// <summary>
-        /// Loads and instantiates a new RecordManager instance from an input stream.
+        /// Gets the file path to the records of the user this instance of Record manager
+        /// is managing.
         /// </summary>
-        /// <param name="inputStream">Reference to an input stream to load from.</param>
-        /// <returns>A referene to the RecordManager instance if it is successfully loaded.
-        /// Otherwise, returns null.</returns>
-        public static RecordManager? Load(TextReader inputStream)
+        /// <returns>A string containing the file path</returns>
+        private string _getUserRecordsFilePath()
         {
-            RecordManager manager = new();
+            string dataDirectory = Utils.GetDataDirectory();
+            string userRecordsFilename = _username;
+            return Path.Combine(dataDirectory, userRecordsFilename);
+        }
 
-            // Read the count of records.
-            string countText = inputStream.ReadLine() ?? string.Empty;
-            int count = int.Parse(countText);
+        /// <summary>
+        /// Saves the current state of record manager to appropriate location
+        /// in hard-drive.
+        /// </summary>
+        /// <returns>true if the save was successful. Otherwise, returns false.</returns>
+        private bool _save()
+        {
+            // Ensure data directory already exists.
+            Utils.SetupDataDirectory();
 
-            // Read all records.
-            for (int i = 0; i < count; i++)
+            string filename = _getUserRecordsFilePath();
+            TextWriter? outputStream = null;
+            try
             {
-                // Read the type name of each of the record.
-                string typeName = inputStream.ReadLine() ?? string.Empty;
-                
-                // Read the record itself.
-                IRecord? record = RecordFactory.MakeRecord(typeName, inputStream);
-                if (record == null)
+                outputStream = new StreamWriter(filename);
+                if (this._save(outputStream))
                 {
-                    // Record is not loaded. Cease operation and return null.
-                    return null;    
+                    return true;
                 }
-
-                manager.AddRecord(record);
+                return false;
+            } catch
+            {
+                return false;
+            } finally
+            {
+                outputStream?.Close();
             }
-
-            return manager;
         }
     }
 }

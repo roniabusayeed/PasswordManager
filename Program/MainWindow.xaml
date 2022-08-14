@@ -5,7 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Program"
         mc:Ignorable="d"
-        Title="Password Manager" Height="450" Width="800">
+        
+        FontSize="16"
+        WindowStartupLocation="CenterScreen"
+        Title="Password Manager" Height="250" Width="500">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="20"/>
@@ -13,71 +16,96 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
-            
-            <RowDefinition Height="auto"/>
+
             <RowDefinition Height="20"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="20"/>
             
             <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="auto"/>
-            
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="auto"/>
+            
             <ColumnDefinition Width="20"/>
         </Grid.ColumnDefinitions>
 
-        <Label Grid.Row="2" Grid.Column="1"
-               Content="Website" />
-        <TextBox Grid.Row="2" Grid.Column="2"
-                 Width="300"
+        <!--Website row-->
+        <Label Grid.Row="1" Grid.Column="1"
+               Content="Website"/>
+        <TextBox Grid.Row="1" Grid.Column="2"
                  x:Name="websiteTextBox" 
-                 KeyUp="websiteTextBox_KeyUp"
+                 KeyDown="websiteTextBox_KeyDown"
+                 VerticalContentAlignment="Center"
+                 Margin="16 0 0 0"
+                 Padding="4 0 4 0"
                  />
-        <Button Grid.Row="2" Grid.Column="3"
+        <Button Grid.Row="1" Grid.Column="3"
                 x:Name="searchButton"
-                ToolTip="Searches the Password Manager for the given website." Click="searchButton_Click" 
+                Margin="16 0 0 0"
+                Height="24" Width="72"
+                ToolTip="Searches the Password Manager for the given website." 
+                Click="searchButton_Click"
+                
                 >
             Search
         </Button>
 
-        <Label Grid.Row="3" Grid.Column="1"
-               Content="Username" />
-        <TextBox Grid.Row="3" Grid.Column="2"
-                 Width="300" 
-                 x:Name="usernameTextBox"/>
-        <Button Grid.Row="3" Grid.Column="3"
+        <!--Username row-->
+        <Label Grid.Row="2" Grid.Column="1"
+               Content="Username" Margin="0 8 0 0"/>
+        <TextBox Grid.Row="2" Grid.Column="2"
+                 x:Name="usernameTextBox"
+                 VerticalContentAlignment="Center"
+                 Margin="16 8 0 0"
+                 Padding="4 0 4 0"
+                 />
+        <Button Grid.Row="2" Grid.Column="3"
                 x:Name="usernameCopyButton"
+                Margin="16 8 0 0"
+                Height="24" Width="72"
                 ToolTip="Copies username to clipboard." Click="usernameCopyButton_Click">
             Copy
         </Button>
 
-        <Label Grid.Row="4" Grid.Column="1"
-               Content="Password"/>
-        <PasswordBox Grid.Row="4" Grid.Column="2"
-                 Width="300"
-                 x:Name="passwordBox"/>
-        <Button Grid.Row="4" Grid.Column="3"
+        <!--Password row-->
+        <Label Grid.Row="3" Grid.Column="1"
+               Content="Password" Margin="0 8 0 0"/>
+        <PasswordBox Grid.Row="3" Grid.Column="2"
+                 x:Name="passwordBox"
+                 VerticalContentAlignment="Center"
+                 Margin="16 8 0 0"
+                Padding="4 0 4 0"
+                />
+        <Button Grid.Row="3" Grid.Column="3"
                 x:Name="passwordCopyButton"
+                Margin="16 8 0 0"
+                Height="24" Width="72"
                 ToolTip="Copies password to clipboard." Click="passwordCopyButton_Click">
             Copy
         </Button>
 
-        <Button Grid.Row="6" Grid.Column="5"
-                x:Name="saveButton" 
-                ToolTip="Saves/updates the Password Manager with the current records" Click="saveButton_Click">
-            Save
-        </Button>
-        <Button Grid.Row="6" Grid.Column="6"
+        <!--Save and Clear buttons-->
+        <StackPanel Grid.Column="2" Grid.ColumnSpan="2"
+                    Grid.Row="4" Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom">
+            <Button
+                x:Name="saveButton"
+                Height="24" Width="72"
+                Margin="0 0 16 0"
+                ToolTip="Saves/updates the Password Manager with the current records"
+                Click="saveButton_Click">
+                Save
+            </Button>
+            <Button
                 x:Name="clearButton"
-                ToolTip="Clears all entries." Click="clearButton_Click">
-            Clear
-        </Button>
-
+                Height="24" Width="72"
+                ToolTip="Clears all entries." 
+                Click="clearButton_Click">
+                Clear
+            </Button>
+        </StackPanel>
+        
     </Grid>
 </Window>

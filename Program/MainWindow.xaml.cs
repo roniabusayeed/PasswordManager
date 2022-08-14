@@ -23,27 +23,20 @@ namespace Program
     /// </summary>
     public partial class MainWindow : Window
     {
-        // Name of the file to save records to or laod records from.
-        private const string FILENAME = "saveFile.txt";
+        // Record manager for the current user.
         private readonly RecordManager _recordManager;
 
-        public MainWindow()
+        public MainWindow(string username)
         {
             InitializeComponent();
 
-            // Load saved records (if any).
-            TextReader? inputStream = null;
-            try
-            {
-                inputStream = new StreamReader(FILENAME);
-                _recordManager = RecordManager.Load(inputStream) ?? new();
-            } catch
-            {
-                _recordManager = new();
-            } finally
-            {
-                inputStream?.Close();
-            }
+            // Set title.
+            this.Title = $"{Constants.APPLICATION_NAME} [{username}]";
+
+            // Initialize the record manager for given username.
+            _recordManager = new RecordManager(username);
+
+            websiteTextBox.Focus();
         }
 
         // Private helper methods.
@@ -67,6 +60,10 @@ namespace Program
                 MessageBox.Show($"No record found for website \"{website}\"", Title);
             }
         }
+
+        /// <summary>
+        /// Clears all entires.
+        /// </summary>
         private void _clear()
         {
             websiteTextBox.Clear();
@@ -75,20 +72,9 @@ namespace Program
         }
 
         /// <summary>
-        /// Saves/updates the current record from input fields and writes
-        /// the changes to file.
+        /// Saves/updates the current record from input fields.
         /// </summary>
         private void _save()
-        {
-            _addToRecordManager();
-            _saveToHardDrive();
-        }
-
-        /// <summary>
-        /// Tries to create a new instance of Record class and adds (or updates)
-        /// it to the _recordManager field.
-        /// </summary>
-        private void _addToRecordManager()
         {
             try
             {
@@ -98,52 +84,26 @@ namespace Program
                     usernameTextBox.Text,
                     passwordBox.Password);
 
-                // Add the instance to the record manager.
-                _recordManager.AddRecord(record);
+                // Save record.
+                if (_recordManager.AddRecord(record))
+                {
+                    MessageBox.Show($"Record saved successfully for website {record.GetWebsite()}",
+                       Constants.APPLICATION_NAME);
+                } else
+                {
+                    MessageBox.Show($"Failed to save record for website {record.GetWebsite()}",
+                        Constants.APPLICATION_NAME);
+                }
+
             } catch (Exception e)
             {
-                MessageBox.Show($"Error: {e.Message}", Title);
-            }
-        }
-
-        /// <summary>
-        /// Saves the current state of _recordManager to file.
-        /// </summary>
-        private void _saveToHardDrive()
-        {
-            TextWriter? outputStream = null;
-            bool status = false;
-            try
-            {
-                outputStream = new StreamWriter(FILENAME);
-                status = _recordManager.Save(outputStream);
-            }
-            catch
-            {
-                MessageBox.Show($"Error: Couldn't open file \"{FILENAME}\" for writing.", Title);
-            }
-            finally
-            {
-                outputStream?.Close();
-            }
-
-            if (!status)
-            {
-                MessageBox.Show($"Error: Couldn't save to file \"{FILENAME}\"", Title);
+                MessageBox.Show(
+                    $"Error: {e.Message}",
+                    Constants.APPLICATION_NAME);
             }
         }
 
         // Event handlers.
-        private void websiteTextBox_KeyUp(object sender, KeyEventArgs e)
-        {
-            // Check if Enter key is pressed while websiteTextBox is in focus.
-            if (e.Key == Key.Enter)
-            {
-                // Do what clicking the search button would do.
-                searchButton_Click(sender, e);
-            }
-        }
-
         private void searchButton_Click(object sender, RoutedEventArgs e)
         {
             _search();
@@ -166,6 +126,20 @@ namespace Program
         private void saveButton_Click(object sender, RoutedEventArgs e)
         {
             _save();
+            _clear();
+        }
+
+        private void websiteTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (! e.IsRepeat)   // So, that KeyDown behaves like KeyPress.
+            {
+                // Check if Enter key is pressed while websiteTextBox is in focus.
+                if (e.Key == Key.Enter)
+                {
+                    // Do what clicking the search button would do.
+                    searchButton_Click(sender, e);
+                }
+            }
         }
     }
 }
