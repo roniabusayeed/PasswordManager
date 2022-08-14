@@ -3,28 +3,32 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Security.Cryptography;
 
 namespace PasswordManagerLibrary
 {
     public class Authenticator
     {
         // Implement Authenticator as a Singleton.
-        private static Authenticator _instance = new Authenticator();
+        private static readonly Authenticator _instance = new();
 
         /// <summary>
         /// Gets the singleton instance of Authenticator class.
         /// </summary>
         /// <returns>The singleton instance.</returns>
         public static Authenticator GetInstance() { return _instance; }
-        
-        
-        private Dictionary<string, User> _usersDictionary;
+
+        private readonly Dictionary<string, User> _usersDictionary;
         private Authenticator()
         {
             _usersDictionary = new Dictionary<string, User>();
             _loadUsers();   // if any.
         }
 
+        // Size of Key and IV for encryption/decryption.
+        private const int KEY_BYTES = 32;
+        private const int IV_BYTES = 16;
+        
         /// <summary>
         /// Loads all users to the users dictionary.
         /// </summary>
@@ -32,24 +36,45 @@ namespace PasswordManagerLibrary
         private bool _loadUsers()
         {
             string userDictionaryFilepPath = _getUsersDictionaryFilePath();
-            TextReader? inputStream = null;
+
+            // If users dictionary file doesn't exist, there's nothing to load from.
+            if (! File.Exists(userDictionaryFilepPath)) { return false; }
+
+            // Buffers for Key and IV.
+            byte[] key = new byte[KEY_BYTES];
+            byte[] iv = new byte[IV_BYTES];
+
             try
             {
-                inputStream = new StreamReader(userDictionaryFilepPath);
-                string usersCountText = inputStream.ReadLine() ?? string.Empty;
+                using FileStream fsIn = new(userDictionaryFilepPath, FileMode.Open);
+                
+                // Read Key and IV.
+                if ((fsIn.Read(key, 0, key.Length) != key.Length) ||
+                    (fsIn.Read(iv, 0, iv.Length) != iv.Length))
+                {
+                    return false;   // Couldn't read key and iv successfully.
+                }
+
+                // Read rest of the data. I.e. the users dictionary.
+
+                // Add decryption layer.
+                using Aes aes = Aes.Create();
+                using CryptoStream csIn =
+                    new(fsIn, aes.CreateDecryptor(key, iv), CryptoStreamMode.Read);
+
+                // Read users dictionary as text.
+                using TextReader textReader = new StreamReader(csIn);
+                string usersCountText = textReader.ReadLine() ?? string.Empty;
                 int usersCount = int.Parse(usersCountText);
                 for (int i = 0; i < usersCount; i++)
                 {
-                    User user = new(inputStream);
+                    User user = new(textReader);
                     _usersDictionary[user.GetUsername()] = user;
                 }
                 return true;
             } catch
             {
                 return false;
-            } finally
-            {
-                inputStream?.Close();
             }
         }
 
@@ -139,24 +164,29 @@ namespace PasswordManagerLibrary
         {
             // Ensure application directory already exists.
             Utils.SetupApplicationDirectory();
-            
+
             string filename = _getUsersDictionaryFilePath();
-            TextWriter? outputStream = null;
+
             try
             {
-                outputStream = new StreamWriter(filename);
-                if (this._save(outputStream))
-                {
-                    return true;
-                }
-                return false;
+                // Create a cryptographic object.
+                using Aes aes = Aes.Create();
+
+                using FileStream fsOut = new(filename, FileMode.Create);
+                
+                // Write Key and IV being used to encrypt this file.
+                fsOut.Write(aes.Key, 0, aes.Key.Length);
+                fsOut.Write(aes.IV, 0, aes.IV.Length);
+
+                // Add encryption layer.
+                using CryptoStream csOut = new(fsOut, aes.CreateEncryptor(), CryptoStreamMode.Write);
+                
+                // Write users dictionary as text.
+                using TextWriter textWriter = new StreamWriter(csOut);
+                return this._save(textWriter);
             } catch
             {
                 return false;
-            }
-            finally
-            {
-                outputStream?.Close();
             }
         }
     }
