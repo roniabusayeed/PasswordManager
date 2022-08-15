@@ -12,36 +12,30 @@ namespace PasswordManagerLibrary
         private const int MINIMUM_PASSWORD_LENGTH = 8;
 
         private string _username;
-        private string _password;
+        private byte[] _passwordHash;
 
         /// <summary>
         /// Creates a new instance of the User class.
+        /// 
+        /// The User object never holds the password. It stores a hash of the
+        /// password instead.
         /// </summary>
         /// <param name="username">A string containing the username</param>
         /// <param name="password">A string containing the password</param>
         /// <exception cref="ArgumentException"></exception>
         public User(string username, string password)
         {
-            _set(username, password);
-        }
-        
-        /// <summary>
-        /// Sets the username and password of the current instance.
-        /// </summary>
-        /// <exception cref="ArgumentException"></exception>
-        private void _set(string username, string password)
-        {
             if (_validateUsername(username) && _validatePassword(password))
             {
                 _username = username;
-                _password = password;
+                _passwordHash = Utils.Hash(password);
                 return;
             }
             throw new ArgumentException(
                     "Username and/or password didn't meet requirements."
                     );
         }
-
+        
         /// <summary>
         /// Reads and instantiates a user from the input stream.
         /// </summary>
@@ -50,16 +44,22 @@ namespace PasswordManagerLibrary
         {
             string username = inputStream.ReadLine() ?? string.Empty;
             string password = inputStream.ReadLine() ?? string.Empty;
-            _set(username, password);
+            _username = username;
+            _passwordHash = Convert.FromBase64String(password);
         }
 
         public string GetUsername()
         {
             return _username;
         }
-        public string GetPassword()
+
+        /// <summary>
+        /// Gets the hash of the password for this User instance.
+        /// </summary>
+        /// <returns>A readonly span of bytes containing the hash</returns>
+        public ReadOnlySpan<byte> GetPasswordHash()
         {
-            return _password;
+            return _passwordHash;
         }
 
         private static bool _validateUsername(string username)
@@ -99,7 +99,8 @@ namespace PasswordManagerLibrary
             try
             {
                 outputStream.WriteLine(GetUsername());
-                outputStream.WriteLine(GetPassword());
+                outputStream.WriteLine(
+                    Convert.ToBase64String(GetPasswordHash()));
             } catch
             {
                 return false;

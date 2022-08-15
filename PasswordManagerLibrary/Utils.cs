@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Security.Cryptography;
 
 namespace PasswordManagerLibrary
 {
@@ -52,6 +53,17 @@ namespace PasswordManagerLibrary
             {
                 Directory.CreateDirectory(GetDataDirectory());
             }
+        }
+
+        /// <summary>
+        /// Computes hash of a string.
+        /// </summary>
+        /// <param name="str">A string whose hash is to be computed</param>
+        /// <returns>A byte array containing the hash</returns>
+        internal static byte[] Hash(string str)
+        {
+            using SHA256 sha256 = SHA256.Create();
+            return sha256.ComputeHash(Encoding.UTF8.GetBytes(str));
         }
     }
 }

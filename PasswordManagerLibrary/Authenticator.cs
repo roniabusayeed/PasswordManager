@@ -83,7 +83,8 @@ namespace PasswordManagerLibrary
         /// Adds an user.
         /// </summary>
         /// <param name="user"></param>
-        /// <returns>true if addinig user was successful. Otherwise, returns false.</returns>
+        /// <returns>true if addinig user was successful. Otherwise,
+        /// returns false.</returns>
         public bool AddUser(User user) 
         {
             // When the user already exists.
@@ -111,7 +112,8 @@ namespace PasswordManagerLibrary
         {
             if (_usersDictionary.TryGetValue(username, out User? user))
             {
-                return user.GetPassword() == password;
+                return user.GetPasswordHash()
+                    .SequenceEqual(Utils.Hash(password));
             }
             return false;
         }
