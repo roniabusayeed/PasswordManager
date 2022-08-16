@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Security.Cryptography;
 
 namespace PasswordManagerLibrary
 {
@@ -16,6 +17,10 @@ namespace PasswordManagerLibrary
 
         // Records dictionary of the user.
         private readonly Dictionary<string, IRecord> _recordsDictionary;
+
+        // Size of Key and IV for encryption/decryption.
+        private const int KEY_BYTES = 32;
+        private const int IV_BYTES = 16;
 
         /// <summary>
         /// Creates a new instance of RecordManager class for a given user.
@@ -36,21 +41,44 @@ namespace PasswordManagerLibrary
         private bool _loadRecords()
         {
             string userRecordsFilePath = _getUserRecordsFilePath();
-            TextReader? inputStream = null;
+
+            // If users records file doesn't exist, there's notthing to load
+            // records from.
+            if (!File.Exists(userRecordsFilePath)) { return false; }
+
+            // Buffer for key and IV.
+            byte[] key = new byte[KEY_BYTES];
+            byte[] iv = new byte[IV_BYTES];
+
             try
             {
-                inputStream = new StreamReader(userRecordsFilePath);
-                
+                using FileStream fs = new(userRecordsFilePath, FileMode.Open);
+
+                // Read key and IV.
+                if ((fs.Read(key, 0, key.Length) != key.Length) ||
+                    (fs.Read(iv, 0, iv.Length) != iv.Length))
+                {
+                    return false;   // Coudn't read the key and IV successfully.
+                }
+
+                // Add the decryption layer.
+                using Aes aes = Aes.Create();
+                using CryptoStream cs = new(fs, aes.CreateDecryptor(key, iv),
+                    CryptoStreamMode.Read);
+
+                // Read users records as text.
+                using TextReader textReader = new StreamReader(cs);
+
                 // Read records count.
-                string recordsCountText = inputStream.ReadLine() ?? string.Empty;
+                string recordsCountText = textReader.ReadLine() ?? string.Empty;
                 int recordsCount = int.Parse(recordsCountText);
-                
+
                 // Read each record.
                 for (int i = 0; i < recordsCount; i++)
                 {
-                    string recordTypeName = inputStream.ReadLine() ?? string.Empty;
-                    IRecord? record = RecordFactory.MakeRecord(recordTypeName, inputStream);
-                    
+                    string recordTypeName = textReader.ReadLine() ?? string.Empty;
+                    IRecord? record = RecordFactory.MakeRecord(recordTypeName, textReader);
+
                     if (record == null)
                     {
                         return false;
@@ -60,12 +88,10 @@ namespace PasswordManagerLibrary
                     _recordsDictionary[record.GetWebsite()] = record;
                 }
                 return true;
-            } catch
+            }
+            catch
             {
                 return false;
-            } finally
-            {
-                inputStream?.Close();
             }
         }
 
@@ -80,10 +106,11 @@ namespace PasswordManagerLibrary
             try
             {
                 return _recordsDictionary[website];
-            } catch (KeyNotFoundException)
+            }
+            catch (KeyNotFoundException)
             {
                 return null;
-            }          
+            }
         }
 
         /// <summary>
@@ -122,7 +149,7 @@ namespace PasswordManagerLibrary
 
                 // If any record is not saved successfully,
                 // cease save operation and return false.
-                if (! record.Save(outputStream))
+                if (!record.Save(outputStream))
                 {
                     return false;
                 }
@@ -140,7 +167,7 @@ namespace PasswordManagerLibrary
         private string _getUserRecordsFilePath()
         {
             string dataDirectory = Utils.GetDataDirectory();
-            string userRecordsFilename = _username;
+            string userRecordsFilename = Convert.ToBase64String(Utils.Hash(_username));
             return Path.Combine(dataDirectory, userRecordsFilename);
         }
 
@@ -155,21 +182,28 @@ namespace PasswordManagerLibrary
             Utils.SetupDataDirectory();
 
             string filename = _getUserRecordsFilePath();
-            TextWriter? outputStream = null;
+
             try
             {
-                outputStream = new StreamWriter(filename);
-                if (this._save(outputStream))
-                {
-                    return true;
-                }
-                return false;
-            } catch
+                // Create a cryptographic object.
+                using Aes aes = Aes.Create();
+
+                using FileStream fs = new(filename, FileMode.Create);
+
+                // Write the key and IV being used to encrypt this file.
+                fs.Write(aes.Key, 0, aes.Key.Length);
+                fs.Write(aes.IV, 0, aes.IV.Length);
+
+                // Add an encryption layer.
+                using CryptoStream cs = new(fs, aes.CreateEncryptor(), CryptoStreamMode.Write);
+
+                // Write users records as text.
+                using TextWriter textWriter = new StreamWriter(cs);
+                return this._save(textWriter);
+            }
+            catch
             {
                 return false;
-            } finally
-            {
-                outputStream?.Close();
             }
         }
     }

@@ -87,11 +87,11 @@ namespace Program
                 // Save record.
                 if (_recordManager.AddRecord(record))
                 {
-                    MessageBox.Show($"Record saved successfully for website {record.GetWebsite()}",
+                    MessageBox.Show($"Record saved successfully for website \"{record.GetWebsite()}\"",
                        Constants.APPLICATION_NAME);
                 } else
                 {
-                    MessageBox.Show($"Failed to save record for website {record.GetWebsite()}",
+                    MessageBox.Show($"Failed to save record for website \"{record.GetWebsite()}\"",
                         Constants.APPLICATION_NAME);
                 }
 
