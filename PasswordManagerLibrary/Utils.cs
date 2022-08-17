@@ -7,7 +7,7 @@ using System.Security.Cryptography;
 
 namespace PasswordManagerLibrary
 {
-    internal static class Utils
+    public static class Utils
     {
         /// <summary>
         /// Gets the root data directory for this application.
@@ -64,6 +64,53 @@ namespace PasswordManagerLibrary
         {
             using SHA256 sha256 = SHA256.Create();
             return sha256.ComputeHash(Encoding.UTF8.GetBytes(str));
+        }
+
+        /// <summary>
+        /// Generates a password.
+        /// </summary>
+        /// <returns></returns>
+        public static string GeneratePassword(
+            int numberOfLettersMin = 8,
+            int numberOfLettersMax = 12,
+            int numberOfDigitsMin = 2,
+            int numberOfDigitsMax = 4,
+            int numberOfSymbolsMin = 2,
+            int numberOfSymbolsMax = 4)
+        {
+            const string LETTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            const string DIGITS = "0123456789";
+            const string SYMBOLS = "!#$%&()*+";
+
+            StringBuilder passwordBuilder = new();
+            Random random = new();
+
+            // Add letters.
+            for (int i = 0, n = random.Next(numberOfLettersMin, numberOfLettersMax + 1);
+                i < n; i++)
+            {
+                passwordBuilder.Append(LETTERS[random.Next(LETTERS.Length)]);
+            }
+
+            // Add digits.
+            for (int i = 0, n = random.Next(numberOfDigitsMin, numberOfDigitsMax + 1);
+                i < n; i++)
+            {
+                passwordBuilder.Append(DIGITS[random.Next(DIGITS.Length)]);
+            }
+
+            // Add symbols.
+            for (int i = 0, n = random.Next(numberOfSymbolsMin, numberOfSymbolsMax + 1);
+                i < n; i++)
+            {
+                passwordBuilder.Append(SYMBOLS[random.Next(SYMBOLS.Length)]);
+            }
+
+            // Shuffle the string.
+            var shuffledPassword = passwordBuilder.ToString()
+                .OrderBy(ch => random.Next());
+
+            return string.Join(null, shuffledPassword);
         }
     }
 }

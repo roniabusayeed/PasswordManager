@@ -91,6 +91,14 @@
                     HorizontalAlignment="Right"
                     VerticalAlignment="Bottom">
             <Button
+                x:Name="generatePasswordButton"
+                Height="24" Width="72"
+                Margin="0 0 16 0"
+                ToolTip="Generates a random password" Click="generatePasswordButton_Click"
+                >
+                Generate
+            </Button>
+            <Button
                 x:Name="saveButton"
                 Height="24" Width="72"
                 Margin="0 0 16 0"

@@ -141,5 +141,10 @@ namespace Program
                 }
             }
         }
+
+        private void generatePasswordButton_Click(object sender, RoutedEventArgs e)
+        {
+            passwordBox.Password = Utils.GeneratePassword();
+        }
     }
 }
