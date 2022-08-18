@@ -72,6 +72,38 @@ namespace Program
                     usernameTextBox.Text,
                     passwordBox.Password);
 
+                // If the user is about to modify an existing record,
+                // ask for their confirmation.
+                IRecord? foundRecord = _recordManager.FindRecord(websiteTextBox.Text);
+
+                // Record already exists for given website.
+                if (foundRecord != null)    
+                {
+                    // And its values have been modified.
+                    if (!record.Equals(foundRecord))    
+                    {
+                        // Ask the user for confirmation.
+                        MessageBoxResult messageBoxResult = MessageBox.Show(
+                        $"There's an existing record for website \"{websiteTextBox.Text}\"" +
+                        $"\n\nAre you sure you want to modify it?",
+                        Constants.APPLICATION_NAME,
+                        MessageBoxButton.YesNo);
+
+                        if (messageBoxResult == MessageBoxResult.No)
+                        {
+                            // Don't save the changes.
+                            return; 
+                        }
+                    }
+
+                    // But its values haven't been modified.
+                    else
+                    {
+                        // Nothing to change.
+                        return; 
+                    }
+                }
+
                 // Save record.
                 if (_recordManager.AddRecord(record))
                 {
@@ -83,7 +115,6 @@ namespace Program
                     MessageBox.Show($"Failed to save record for website \"{record.GetWebsite()}\"",
                         Constants.APPLICATION_NAME);
                 }
-
             }
             catch (Exception e)
             {
@@ -116,7 +147,6 @@ namespace Program
         private void saveButton_Click(object sender, RoutedEventArgs e)
         {
             _save();
-            _clear();
         }
 
         private void websiteTextBox_KeyDown(object sender, KeyEventArgs e)
