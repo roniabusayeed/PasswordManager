@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-
-namespace PasswordManagerLibrary
+﻿namespace PasswordManagerLibrary
 {
     public class User
     {
@@ -35,7 +28,7 @@ namespace PasswordManagerLibrary
                     "Username and/or password didn't meet requirements."
                     );
         }
-        
+
         /// <summary>
         /// Reads and instantiates a user from the input stream.
         /// </summary>
@@ -69,7 +62,7 @@ namespace PasswordManagerLibrary
             // Username cannot be empty.
             // Should contain only letters, numbers, and underscore.
 
-            return username.Length > 0 
+            return username.Length > 0
                 && username.All(
                     ch => char.IsLetter(ch) || char.IsDigit(ch) || ch == '_'
                     );
@@ -84,7 +77,7 @@ namespace PasswordManagerLibrary
             // At least 8 characters.
 
             return password.Length >= MINIMUM_PASSWORD_LENGTH
-                && password.Any(ch => char.IsLower(ch)) 
+                && password.Any(ch => char.IsLower(ch))
                 && password.Any(ch => char.IsUpper(ch))
                 && password.Any(ch => char.IsDigit(ch));
         }
@@ -101,7 +94,8 @@ namespace PasswordManagerLibrary
                 outputStream.WriteLine(GetUsername());
                 outputStream.WriteLine(
                     Convert.ToBase64String(GetPasswordHash()));
-            } catch
+            }
+            catch
             {
                 return false;
             }

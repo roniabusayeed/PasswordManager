@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 
 namespace PasswordManagerLibrary
 {
@@ -28,7 +23,7 @@ namespace PasswordManagerLibrary
         // Size of Key and IV for encryption/decryption.
         private const int KEY_BYTES = 32;
         private const int IV_BYTES = 16;
-        
+
         /// <summary>
         /// Loads all users to the users dictionary.
         /// </summary>
@@ -38,7 +33,7 @@ namespace PasswordManagerLibrary
             string userDictionaryFilepPath = _getUsersDictionaryFilePath();
 
             // If users dictionary file doesn't exist, there's nothing to load from.
-            if (! File.Exists(userDictionaryFilepPath)) { return false; }
+            if (!File.Exists(userDictionaryFilepPath)) { return false; }
 
             // Buffers for Key and IV.
             byte[] key = new byte[KEY_BYTES];
@@ -47,7 +42,7 @@ namespace PasswordManagerLibrary
             try
             {
                 using FileStream fsIn = new(userDictionaryFilepPath, FileMode.Open);
-                
+
                 // Read Key and IV.
                 if ((fsIn.Read(key, 0, key.Length) != key.Length) ||
                     (fsIn.Read(iv, 0, iv.Length) != iv.Length))
@@ -72,7 +67,8 @@ namespace PasswordManagerLibrary
                     _usersDictionary[user.GetUsername()] = user;
                 }
                 return true;
-            } catch
+            }
+            catch
             {
                 return false;
             }
@@ -85,7 +81,7 @@ namespace PasswordManagerLibrary
         /// <param name="user"></param>
         /// <returns>true if addinig user was successful. Otherwise,
         /// returns false.</returns>
-        public bool AddUser(User user) 
+        public bool AddUser(User user)
         {
             // When the user already exists.
             if (_usersDictionary.ContainsKey(user.GetUsername()))
@@ -94,7 +90,7 @@ namespace PasswordManagerLibrary
             }
 
             _usersDictionary[user.GetUsername()] = user;
-            
+
             // Save the current state to file.
             this._save();
 
@@ -130,7 +126,8 @@ namespace PasswordManagerLibrary
             try
             {
                 outputStream.WriteLine(_usersDictionary.Count);
-            } catch
+            }
+            catch
             {
                 return false;
             }
@@ -138,7 +135,7 @@ namespace PasswordManagerLibrary
             // Write each user in dictionary.
             foreach (User user in _usersDictionary.Values)
             {
-                if (! user.Save(outputStream))
+                if (!user.Save(outputStream))
                 {
                     return false;
                 }
@@ -175,18 +172,19 @@ namespace PasswordManagerLibrary
                 using Aes aes = Aes.Create();
 
                 using FileStream fsOut = new(filename, FileMode.Create);
-                
+
                 // Write Key and IV being used to encrypt this file.
                 fsOut.Write(aes.Key, 0, aes.Key.Length);
                 fsOut.Write(aes.IV, 0, aes.IV.Length);
 
                 // Add encryption layer.
                 using CryptoStream csOut = new(fsOut, aes.CreateEncryptor(), CryptoStreamMode.Write);
-                
+
                 // Write users dictionary as text.
                 using TextWriter textWriter = new StreamWriter(csOut);
                 return this._save(textWriter);
-            } catch
+            }
+            catch
             {
                 return false;
             }

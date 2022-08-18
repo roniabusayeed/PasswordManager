@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using PasswordManagerLibrary;
+﻿using PasswordManagerLibrary;
 
 namespace PasswordManagerLibraryTest
 {
@@ -142,14 +136,14 @@ namespace PasswordManagerLibraryTest
 
             // Assert.
             Assert.IsNotNull(loadedManager);
-            
+
             Assert.AreEqual(
                 loadedManager.FindRecord("website")?.GetUsername(),
                 "modified-username");
             Assert.AreEqual(
                 loadedManager.FindRecord("website")?.GetPassword(),
                 "modified-password");
-            
+
             Assert.AreEqual(
                 loadedManager.FindRecord("website2")?.GetUsername(),
                 "username2");

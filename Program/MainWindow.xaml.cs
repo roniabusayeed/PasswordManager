@@ -1,20 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using PasswordManagerLibrary;
+using System;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
-using PasswordManagerLibrary;
-using System.IO;
 
 namespace Program
 {
@@ -46,7 +33,7 @@ namespace Program
             string website = websiteTextBox.Text;
 
             // Search for the website record in the record manager.
-            IRecord? record =  _recordManager.FindRecord(website);
+            IRecord? record = _recordManager.FindRecord(website);
             if (record != null)
             {
                 // Populate the uesrname and password fields.
@@ -55,7 +42,8 @@ namespace Program
 
                 // Automatically copy the password to clipboard.
                 Clipboard.SetText(record.GetPassword());
-            } else
+            }
+            else
             {
                 MessageBox.Show($"No record found for website \"{website}\"", Title);
             }
@@ -89,13 +77,15 @@ namespace Program
                 {
                     MessageBox.Show($"Record saved successfully for website \"{record.GetWebsite()}\"",
                        Constants.APPLICATION_NAME);
-                } else
+                }
+                else
                 {
                     MessageBox.Show($"Failed to save record for website \"{record.GetWebsite()}\"",
                         Constants.APPLICATION_NAME);
                 }
 
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 MessageBox.Show(
                     $"Error: {e.Message}",
@@ -118,7 +108,7 @@ namespace Program
         {
             Clipboard.SetText(passwordBox.Password);
         }
-        
+
         private void clearButton_Click(object sender, RoutedEventArgs e)
         {
             _clear();
@@ -131,7 +121,7 @@ namespace Program
 
         private void websiteTextBox_KeyDown(object sender, KeyEventArgs e)
         {
-            if (! e.IsRepeat)   // So, that KeyDown behaves like KeyPress.
+            if (!e.IsRepeat)   // So, that KeyDown behaves like KeyPress.
             {
                 // Check if Enter key is pressed while websiteTextBox is in focus.
                 if (e.Key == Key.Enter)

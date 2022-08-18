@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PasswordManagerLibrary
+﻿namespace PasswordManagerLibrary
 {
     public interface IRecord
     {
@@ -33,7 +27,7 @@ namespace PasswordManagerLibrary
         /// <returns>true if the username is set successfully. Otherwise, the username
         /// remains unchanged and it returns false.</returns>
         bool SetUsername(string username);
-        
+
         /// <summary>
         /// Sets the password field of the record.
         /// </summary>

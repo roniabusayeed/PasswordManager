@@ -1,18 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using PasswordManagerLibrary;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-
-using PasswordManagerLibrary;
 
 namespace Program
 {
@@ -46,7 +34,8 @@ namespace Program
                                                             // via constructor arguments.
                 mainWindow.Show();
                 this.Close();
-            } else
+            }
+            else
             {
                 // Authentication failed. Display message.
                 MessageBox.Show(
@@ -68,20 +57,22 @@ namespace Program
                     MessageBox.Show(
                         "New profile created for \"" + newUser.GetUsername() + "\"",
                         Constants.APPLICATION_NAME);
-                } else
+                }
+                else
                 {
                     MessageBox.Show(
                         $"There's already a profile with username \"{newUser.GetUsername()}\"",
                         Constants.APPLICATION_NAME);
                 }
-            } catch
+            }
+            catch
             {
                 MessageBox.Show(
                     Constants.SIGN_UP_REQUIREMENTS,
                     Constants.APPLICATION_NAME);
             }
         }
-        
+
         /// <summary>
         /// Clears all entries.
         /// </summary>
@@ -94,7 +85,7 @@ namespace Program
         // Event handlers.
         private void passwordBox_KeyDown(object sender, KeyEventArgs e)
         {
-            if (! e.IsRepeat)  // So that KeyDown behaves like KeyPress.
+            if (!e.IsRepeat)  // So that KeyDown behaves like KeyPress.
             {
                 if (e.Key == Key.Enter)
                 {

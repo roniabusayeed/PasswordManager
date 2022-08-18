@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PasswordManagerLibrary
+﻿namespace PasswordManagerLibrary
 {
     public class RecordFactory
     {
@@ -18,13 +12,14 @@ namespace PasswordManagerLibrary
         public static IRecord? MakeRecord(string typeName, TextReader inputStream)
         {
             IRecord? record = null;
-            switch(typeName)
+            switch (typeName)
             {
                 case "Record":
                     try
                     {
                         record = new Record(inputStream);
-                    } catch { record = null; }
+                    }
+                    catch { record = null; }
                     break;
             }
             return record;

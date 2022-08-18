@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PasswordManagerLibrary
+﻿namespace PasswordManagerLibrary
 {
     public class Record : IRecord
     {
@@ -58,7 +52,8 @@ namespace PasswordManagerLibrary
                 website = inputStream.ReadLine() ?? string.Empty;
                 username = inputStream.ReadLine() ?? string.Empty;
                 password = inputStream.ReadLine() ?? string.Empty;
-            } catch
+            }
+            catch
             {
                 throw new Exception("Couldn't read from input stream. The stream" +
                     "is closed perhaps?");
@@ -83,7 +78,7 @@ namespace PasswordManagerLibrary
         {
             // Leading and trailing whitespaces of a website name are ignored.
             string trimmedWebsite = website.Trim();
-            
+
             // A website name shouldn't contain only whitespaces.
             if (trimmedWebsite.Length == 0) { return false; }
 
@@ -128,7 +123,7 @@ namespace PasswordManagerLibrary
 
             // A username cannot be empty or consists only of whitespaces.
             if (trimmedUsername.Length == 0) { return false; }
-            
+
 
             // A username cannot contain any whitespace character in between
             // (i.e. besides the leading and the trailing ones).
@@ -148,7 +143,8 @@ namespace PasswordManagerLibrary
                 outputStream.WriteLine(GetWebsite());
                 outputStream.WriteLine(GetUsername());
                 outputStream.WriteLine(GetPassword());
-            } catch
+            }
+            catch
             {
                 return false;
             }

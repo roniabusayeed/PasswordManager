@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using PasswordManagerLibrary;
+﻿using PasswordManagerLibrary;
 
 namespace PasswordManagerLibraryTest
 {
@@ -122,7 +116,7 @@ namespace PasswordManagerLibraryTest
 
             string websiteLeadingAndTrailingWhitespaces = "  website\t\t   ";
             string websiteLeadingAndTrailingWhitespaces_Expected = "website";
-            
+
             string websiteWhitespacesInBetween = "  website name\t\n  ";
             string websiteWhitespacesInBetween_Expected = "website name";
 
@@ -180,7 +174,7 @@ namespace PasswordManagerLibraryTest
         {
             const string filename = "TestInputFiles/Record_Constructor_InputStream_Test_1.txt";
             TextReader inputStream = new StreamReader(filename);
-            
+
             // Try to instantiate off of a closed stream should
             // result in an Exception instance being thrown.
             inputStream.Close();
@@ -194,7 +188,7 @@ namespace PasswordManagerLibraryTest
         {
             const string filename = "TestInputFiles/Record_Constructor_InputStream_Test_2.txt";
             TextReader inputStream = new StreamReader(filename);
-            
+
             Assert.ThrowsException<InvalidWebsiteException>(() =>
             {
                 new Record(inputStream);
@@ -240,14 +234,14 @@ namespace PasswordManagerLibraryTest
             string validUsername = "  username\t";
             string validPassword = "password  \t";
             IRecord record = new Record(validWebsite, validUsername, validPassword);
-            
+
             // Open a output stream.
             const string filename = "TestOutputFiles/Record_Save_Test_1.txt";
             TextWriter outputStream = new StreamWriter(filename);
 
             // Act.
             bool result = record.Save(outputStream);
-            
+
             // Close output stream.
             outputStream.Close();
 

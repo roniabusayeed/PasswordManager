@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
-using System.Security.Cryptography;
 
 namespace PasswordManagerLibrary
 {
@@ -37,7 +33,7 @@ namespace PasswordManagerLibrary
         /// </summary>
         internal static void SetupApplicationDirectory()
         {
-            if (! Directory.Exists(GetApplicationDirectory()))
+            if (!Directory.Exists(GetApplicationDirectory()))
             {
                 Directory.CreateDirectory(GetApplicationDirectory());
             }
@@ -49,7 +45,7 @@ namespace PasswordManagerLibrary
         /// </summary>
         internal static void SetupDataDirectory()
         {
-            if (! Directory.Exists(GetDataDirectory()))
+            if (!Directory.Exists(GetDataDirectory()))
             {
                 Directory.CreateDirectory(GetDataDirectory());
             }
