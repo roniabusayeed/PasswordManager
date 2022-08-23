@@ -201,5 +201,20 @@ namespace PasswordManagerLibrary
                 return false;
             }
         }
+
+        /// <summary>
+        /// Removes a record from this RecordManager instance.
+        /// </summary>
+        /// <param name="website">A string containing the name of the website whose record is to be removed.</param>
+        /// <returns>true if the website is found and the record is successfully
+        /// removed. Otherwise returns false.</returns>
+        public bool RemoveRecord(string website)
+        {
+            if (_recordsDictionary.Remove(website))
+            {
+                return _save();
+            }
+            return false;
+        }
     }
 }

@@ -99,6 +99,16 @@
                 Generate
             </Button>
             <Button
+                x:Name="removeRecordButton"
+                Height="24" Width="72"
+                Margin="0 0 16 0"
+                ToolTip="Removes the record for the given website" 
+                Click="removeRecordButton_Click"
+                >
+                Remove
+            </Button>
+            
+            <Button
                 x:Name="saveButton"
                 Height="24" Width="72"
                 Margin="0 0 16 0"

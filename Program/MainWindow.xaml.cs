@@ -166,5 +166,35 @@ namespace Program
         {
             passwordBox.Password = Utils.GeneratePassword();
         }
+
+        private void removeRecordButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Get a hold of the website name.
+            string website = websiteTextBox.Text;
+
+            if (_recordManager.FindRecord(website) != null) // Check if the record exists.
+            {
+                // Ask for user confirmation.
+                MessageBoxResult result = MessageBox.Show(
+                    $"Are you sure you want to remove \"{website}\" record?"
+                    , Constants.APPLICATION_NAME, MessageBoxButton.YesNo);
+                if (result == MessageBoxResult.Yes) // User confirmed.
+                {
+                    if (_recordManager.RemoveRecord(website))
+                    {
+                        MessageBox.Show($"\"{website}\" record removed successfully.");
+                        _clear();
+                    } else
+                    {
+                        MessageBox.Show($"\"{website}\" record removal was not successful.");
+                    }
+                }
+
+            } else  // Record doesn't exist.
+            {
+                MessageBox.Show("Website not found.", Constants.APPLICATION_NAME);
+            }
+            
+        }
     }
 }
